@@ -28,7 +28,7 @@ TXT_HELP = BOLD + "Help: " + END + "\n\
 
 def fetch_data(endpoint, params=None):
 	"""
-	Fetch data from a Redmine API endpoint with error handling.
+	Fetch data from a Redmine API endpoint using parameters.
 	"""
 	url = f"{BASE_URL}{endpoint}"
 	try:
@@ -41,7 +41,7 @@ def fetch_data(endpoint, params=None):
 
 def fetch_endpoint_data(endpoint, progress, task_id):
 	"""
-	Fetch all data from a given endpoint with pagination and progress bar.
+	Fetch all data from a given endpoint.
 	"""
 	all_data = []
 	offset = 0
@@ -73,7 +73,7 @@ def fetch_endpoint_data(endpoint, progress, task_id):
 
 def fetch_project_data(project_id, progress, task_id):
 	"""
-	Fetch all related data for a given project and update progress bar.
+	Fetch all related data for a given project.
 	"""
 	memberships = fetch_data(f"/projects/{project_id}/memberships.json")
 	progress.update(task_id, advance=1)
@@ -93,7 +93,7 @@ def fetch_project_data(project_id, progress, task_id):
 
 def fetch_issue_data(issue_id, progress, task_id):
 	"""
-	Fetch all related data for a given issue and update progress bar.
+	Fetch all related data for a given issue.
 	"""
 	relations = fetch_data(f"/issues/{issue_id}/relations.json")
 	progress.update(task_id, advance=4)
