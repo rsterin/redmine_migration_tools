@@ -1,6 +1,4 @@
-import requests
-import json
-import sys, getopt
+import json, requests, sys, getopt
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
 
 HEADERS = None
