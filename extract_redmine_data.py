@@ -106,7 +106,7 @@ def fetch_all_data(output_file):
 	"""
 	endpoints = {
 		"projects": "/projects.json",
-		# "issues": "/issues.json",
+		"issues": "/issues.json",
 		"users": "/users.json",
 		"time_entries": "/time_entries.json",
 		"news": "/news.json",
