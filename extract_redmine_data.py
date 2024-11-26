@@ -43,7 +43,7 @@ def fetch_data(endpoint, params=None):
 		print(BOLD + "Error: " + END + f"{err}")
 	return None
 
-def fetch_endpoint_data(endpoint, progress, task_id, output_file):
+def fetch_endpoint_data(endpoint, progress, task_id):
 	"""
 	Fetch all data from a given endpoint.
 	"""
@@ -75,7 +75,7 @@ def fetch_endpoint_data(endpoint, progress, task_id, output_file):
 	return all_data
 
 
-def fetch_project_data(project_id, progress, task_id, output_file):
+def fetch_project_data(project_id, progress, task_id):
 	"""
 	Fetch all related data for a given project.
 	"""
@@ -95,7 +95,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		"files": files
 	}
 
-def fetch_issue_data(issue_id, progress, task_id, output_file):
+def fetch_issue_data(issue_id, progress, task_id):
 	"""
 	Fetch all related data for a given issue.
 	"""
@@ -130,19 +130,19 @@ def fetch_all_data(output_file):
 	) as progress:
 		for key, endpoint in endpoints.items():
 			task_id = progress.add_task(f"Fetching {key}", total=None)
-			data = fetch_endpoint_data(endpoint, progress, task_id, output_file)
+			data = fetch_endpoint_data(endpoint, progress, task_id)
 			consolidated_data[key] = data
 
 			if key == "projects":
 				for project in data:
 					project_id = project["id"]
-					project_data = fetch_project_data(project_id, progress, task_id, output_file)
+					project_data = fetch_project_data(project_id, progress, task_id)
 					project.update(project_data)
 
 			if key == "issues":
 				for issue in data:
 					issue_id = issue["id"]
-					issue_data = fetch_issue_data(issue_id, progress, task_id, output_file)
+					issue_data = fetch_issue_data(issue_id, progress, task_id)
 					issue.update(issue_data)
 
 				for issue in data:
@@ -161,14 +161,15 @@ def fetch_all_data(output_file):
 						})
 
 	if consolidated_data:
+		cleaned_path = os.path.dirname(output_file)
+		if cleaned_path:
+			os.makedirs(cleaned_path, exist_ok=True)
+			print("Path " + BOLD + f"{cleaned_path}/" + END + " as been created")
 		if not MULTIPLE_FILE:
 			with open(output_file, "w", encoding="utf-8") as file:
 				json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
 			print("All data saved to " + BOLD + f"{output_file}" + END)
 		else:
-			cleaned_path = os.path.dirname(output_file)
-			os.makedirs(cleaned_path, exist_ok=True)
-			print("Path " + BOLD + f"{cleaned_path}/" + END + " as been created")
 			with open(output_file + 'projects.json', "w", encoding="utf-8") as file:
 				json.dump(consolidated_data["projects"], file, indent=4, ensure_ascii=False)
 			print("Data as been saved to " + BOLD + f"{output_file + 'projects.json'}" + END)
