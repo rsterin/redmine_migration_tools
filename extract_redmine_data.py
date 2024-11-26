@@ -219,9 +219,9 @@ if __name__ == "__main__":
 				print(f"\x1B[1mError:\x1B[0m You can not use multiple file option while using single file option too.\n{TXT_USAGE}")
 				sys.exit(1)
 			output_file = ''
-			MULTIPLE_FILE = True
 			if arg:
 				output_file = arg.removesuffix('.json')
+			MULTIPLE_FILE = True
 	if not MULTIPLE_FILE:
 		SINGLE_FILE = True
 	if HEADERS == None:
