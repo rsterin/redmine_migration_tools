@@ -112,7 +112,7 @@ def fetch_issue_data(issue_id, progress, task_id):
 
 def fetch_all_data(output_file):
 	"""
-	Fetch all data from key endpoints and save it into a single JSON file.
+	Fetch all data from key endpoints and save it into JSON file(s).
 	"""
 	endpoints = {
 		"projects": "/projects.json",
