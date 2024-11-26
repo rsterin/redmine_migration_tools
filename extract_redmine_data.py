@@ -3,31 +3,36 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeEl
 
 HEADERS = None
 MULTIPLE_FILE = False
-BASE_URL = "http://localhost:8080/"
+BASE_URL = "http://localhost/"
 
 BOLD = "\x1B[1m"
 ITALIC = "\x1B[3m"
 END = "\x1B[0m"
 
-TXT_USAGE = BOLD + "Usage: " + END + "\n\
-\tpython3 extract_redmine_data.py " + ITALIC + "-h -a <API_KEY> -s <SINGLE_OUTPUT_FILE> -m <MULTIPLE_OUTPUT_FILE>" + END + "\n\
+TXT_USAGE = BOLD + "Usage: " + END + "(e.g)\n\
+\tpython3 extract_redmine_data.py " + ITALIC + "-h -a <API_KEY> -s <SINGLE_OUTPUT_FILE>" + END + "\n\
 \tOR\n\
-\tpython3 extract_redmine_data.py " + ITALIC + "--help --api-key=<API_KEY> --single-file=<OUTPUT_FILE> --multiple-files=<MULTIPLE_OUTPUT_FILE>" + END
+\tpython3 extract_redmine_data.py " + ITALIC + "--help --api-key=<API_KEY> --multiple-files=<MULTIPLE_OUTPUT_FILE>" + END
 
 TXT_HELP = BOLD + "Options: " + END + "\n\
 \t" + BOLD + "-h, -help" + END + "\n\
 \t\tPrint this help paragraph.\n\n\
 \t" + BOLD + "-a, --api_key=API-KEY" + END + " (required)\n\
-\t\tUse to set the API key. To find it, you need to go on redmine, then on my account, then show the key.\n\t\t⚠ You need to enable the REST API in the administration tab.\n\n\
+\t\tUse to set the API key. To find it, you need to go on redmine, then on my account, then show the key.\n\
+\t\t⚠ You need to enable the REST API in the administration tab.\n\n\
+\t" + BOLD + "-u, --url=URL" + END + " (optional)\n\
+\t\tUse to set the URL of your Redmine server.\n\
+\t\tDefault: " + ITALIC + "http://localhost/" + END + "\n\
+\t\tE.g: " + ITALIC + "--url=http://my-redmine-server:8080/" + END + "\n\n\
 \t" + BOLD + "-s, --single-file=SINGLE_OUTPUT_FILE" + END + " (default)\n\
 \t\tUse to choose a single output file.\n\
 \t\tPrefer a JSON file as it will write it in this format.\n\
-\t\tDefault: \"redmine_data.json\"\n\
+\t\tDefault: " + ITALIC + "\"redmine_data.json\"" + END + "\n\
 \t\t⚠ It will clear the file if already exist or create it if not existing.\n\n\
 \t" + BOLD + "-m, --multiple-files=MULTIPLE_OUTPUT_FILE" + END + " (optional)\n\
 \t\tUse to choose a multiple output file.\n\
 \t\tIt will extract each categories into separate file.\n\
-\t\tYou can add a prefix as argument, e.g: --multiple-files=test_data_ will output test_data_projects.json, test_data_issues.json...\n\
+\t\tYou can add a prefix as argument, e.g: " + ITALIC + "--multiple-files=test_data_ will output test_data_projects.json, test_data_issues.json..." + END + "\n\
 \t\t⚠ It will clear the file if already exist or create it if not existing."
 
 def fetch_data(endpoint, params=None):
@@ -113,12 +118,12 @@ def fetch_all_data(output_file):
 		"issues": "/issues.json",
 		"users": "/users.json",
 		"time_entries": "/time_entries.json",
-		"news": "/news.json",
+		"news": "/news.json"
 	}
 
 	consolidated_data = {
-		"gantt_data": [],
-		"calendar_data": []
+		"gantt": [],
+		"calendar": []
 	}
 
 	with Progress(
@@ -147,14 +152,14 @@ def fetch_all_data(output_file):
 
 				for issue in data:
 					if "start_date" in issue and "due_date" in issue:
-						consolidated_data["gantt_data"].append({
+						consolidated_data["gantt"].append({
 							"task": issue["subject"],
 							"start_date": issue["start_date"],
 							"due_date": issue["due_date"],
 							"assigned_to": issue.get("assigned_to", {}).get("name", "Unassigned")
 						})
 					if "start_date" in issue:
-						consolidated_data["calendar_data"].append({
+						consolidated_data["calendar"].append({
 							"event": issue["subject"],
 							"start_date": issue["start_date"],
 							"end_date": issue.get("due_date", issue["start_date"])
@@ -170,34 +175,26 @@ def fetch_all_data(output_file):
 				json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
 			print("All data saved to " + BOLD + f"{output_file}" + END)
 		else:
-			with open(output_file + 'projects.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["projects"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'projects.json'}" + END)
-			with open(output_file + 'issues.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["issues"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'issues.json'}" + END)
-			with open(output_file + 'users.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["users"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'users.json'}" + END)
-			with open(output_file + 'time_entries.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["time_entries"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'time_entries.json'}" + END)
-			with open(output_file + 'news.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["news"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'news.json'}" + END)
-			with open(output_file + 'gantt.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["gantt_data"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'gantt.json'}" + END)
-			with open(output_file + 'calendar.json', "w", encoding="utf-8") as file:
-				json.dump(consolidated_data["calendar_data"], file, indent=4, ensure_ascii=False)
-			print("Data as been saved to " + BOLD + f"{output_file + 'calendar.json'}" + END)
+			to_save = {
+				"projects",
+				"issues",
+				"users",
+				"time_entries",
+				"news",
+				"gantt",
+				"calendar"
+			}
+			for key in to_save:
+				with open(output_file + key + '.json', "w", encoding="utf-8") as file:
+					json.dump(consolidated_data[key], file, indent=4, ensure_ascii=False)
+				print("Data as been saved to " + BOLD + f"{output_file + key + '.json'}" + END)
 	else:
 		print(BOLD + "Error:\n" + END + "\tData fetching failed. No data was saved.")
 
 if __name__ == "__main__":
 	output_file = 'redmine_data.json'
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"hs:ma:",["help", "single-file=", "multiple-files=", "api-key="])
+		opts, args = getopt.getopt(sys.argv[1:],"hu:s:ma:",["help", "url=", "single-file=", "multiple-files=", "api-key="])
 	except getopt.GetoptError:
 		print(f"\x1B[1mUnhandle option/argument\x1B[0m (wrong option or missing required argument)\n{TXT_USAGE}")
 		sys.exit(1)
@@ -208,6 +205,8 @@ if __name__ == "__main__":
 		elif opt in ("-a", "--api-key"):
 			api_key = arg
 			HEADERS = {'X-Redmine-API-Key': api_key}
+		elif opt in ("-u", "--url"):
+			BASE_URL = arg
 		elif opt in ("-s", "--single-file"):
 			output_file = arg
 		elif opt in ("-m", "--multiple-files"):
