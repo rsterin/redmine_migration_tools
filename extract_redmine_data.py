@@ -1,16 +1,17 @@
 import json, requests, sys, getopt, os
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
 
-HEADERS = None
+SINGLE_FILE = False
 MULTIPLE_FILE = False
 BASE_URL = "http://localhost/"
+HEADERS = None
 
 BOLD = "\x1B[1m"
 ITALIC = "\x1B[3m"
 END = "\x1B[0m"
 
 TXT_USAGE = BOLD + "Usage: " + END + "(e.g)\n\
-\tpython3 extract_redmine_data.py " + ITALIC + "-h -a <API_KEY> -u <URL>-s <SINGLE_OUTPUT_FILE> -m" + END + "\n\
+\tpython3 extract_redmine_data.py " + ITALIC + "-h -a <API_KEY> -u <URL> -s <SINGLE_OUTPUT_FILE> -m" + END + "\n\
 \tOR\n\
 \tpython3 extract_redmine_data.py " + ITALIC + "--help --api-key=<API_KEY> --ulr=<URL> --single-file=<SINGLE_OUTPUT_FILE> --multiple-files=<MULTIPLE_OUTPUT_FILE>" + END
 
@@ -196,7 +197,7 @@ if __name__ == "__main__":
 	try:
 		opts, args = getopt.getopt(sys.argv[1:],"hu:s:ma:",["help", "url=", "single-file=", "multiple-files=", "api-key="])
 	except getopt.GetoptError:
-		print(f"\x1B[1mUnhandle option/argument\x1B[0m (wrong option or missing required argument)\n{TXT_USAGE}")
+		print(f"\x1B[1mError:\x1B[0m Unhandle option/argument (wrong option or missing required argument)\n{TXT_USAGE}")
 		sys.exit(1)
 	for opt, arg in opts:
 		if opt in ("-h", "--help"):
@@ -208,12 +209,21 @@ if __name__ == "__main__":
 		elif opt in ("-u", "--url"):
 			BASE_URL = arg
 		elif opt in ("-s", "--single-file"):
+			if MULTIPLE_FILE:
+				print(f"\x1B[1mError:\x1B[0m You can not use single file option while using multiple file option too.\n{TXT_USAGE}")
+				sys.exit(1)
 			output_file = arg
+			SINGLE_FILE = True
 		elif opt in ("-m", "--multiple-files"):
+			if SINGLE_FILE:
+				print(f"\x1B[1mError:\x1B[0m You can not use multiple file option while using single file option too.\n{TXT_USAGE}")
+				sys.exit(1)
 			output_file = ''
 			MULTIPLE_FILE = True
 			if arg:
 				output_file = arg.removesuffix('.json')
+	if not MULTIPLE_FILE:
+		SINGLE_FILE = True
 	if HEADERS == None:
 		print(f"\x1B[1mMissing API key\x1B[0m\n{TXT_USAGE}")
 		sys.exit(2)
