@@ -171,7 +171,8 @@ def fetch_all_data(output_file):
 		if cleaned_path:
 			os.makedirs(cleaned_path, exist_ok=True)
 			print("Path " + BOLD + f"{cleaned_path}/" + END + " as been created")
-		if not MULTIPLE_FILE:
+
+		if SINGLE_FILE:
 			with open(output_file, "w", encoding="utf-8") as file:
 				json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
 			print("All data saved to " + BOLD + f"{output_file}" + END)
