@@ -6,6 +6,7 @@ OUTPUT_SINGLE_FILE = False
 INPUT_MULTIPLE_FILE = False
 OUTPUT_MULTIPLE_FILE = False
 AUTO = False
+AUTO_INDENT = 5000
 
 BOLD = "\x1B[1m"
 ITALIC = "\x1B[3m"
@@ -14,7 +15,7 @@ END = "\x1B[0m"
 TXT_USAGE = BOLD + "Usage: " + END + "(e.g)\n\
 \tpython3 data_process_to_jira.py " + ITALIC + "-h -i <SINGLE_INPUT_FILE> -o <SINGLE_OUTPUT_FILE> -a" + END + "\n\
 \tOR\n\
-\tpython3 data_process_to_jira.py " + ITALIC + "--help --multiple-input-files=<MULTIPLE_INPUT_FILES> --multiple-output-files=<MULTIPLE_OUTPUT_FILES> --auto" + END
+\tpython3 data_process_to_jira.py " + ITALIC + "--help --multiple-input-files=<MULTIPLE_INPUT_FILES> --multiple-output-files=<MULTIPLE_OUTPUT_FILES> --auto=<LINE_PER_FILE>" + END
 
 TXT_HELP = BOLD + "Options: " + END + "\n\
 \t" + BOLD + "-h, -help" + END + "\n\
@@ -36,8 +37,9 @@ TXT_HELP = BOLD + "Options: " + END + "\n\
 \t\tIt will process each categories into separate file.\n\
 \t\tYou can add a prefix as argument, e.g: " + ITALIC + "--multiple-output-files=test/xyz_ will output test/xyz_projects.json..." + END + "\n\
 \t\t⚠ It will clear the file if already exist or create it if not existing.\n\n\
-\t" + BOLD + "-a, --auto" + END + " (recommended)\n\
-\t\tUse to split data in different file that contain approximately 1500 lines."
+\t" + BOLD + "-a, --auto=LINE_PER_FILE" + END + " (recommended)\n\
+\t\tUse to split data in different file.\n\
+\t\tDefault: " + ITALIC + "5000 lines per file" + END + "."
 
 def process_projects(input_file, progress, task_id):
 	"""
@@ -252,7 +254,7 @@ def split_and_save(data, base_filename, key=None):
 			chunk_data = {key: [item]}
 			chunk_lines = len(json.dumps(chunk_data, indent=4, ensure_ascii=False).splitlines()) - 4
 
-			if current_line_count + chunk_lines > 1500:
+			if current_line_count + chunk_lines > int(AUTO_INDENT):
 				if current_chunk:
 					save_chunk(current_chunk, base_filename, part, key)
 					part += 1
@@ -289,7 +291,7 @@ if __name__ == "__main__":
 	input_file = 'redmine_data.json'
 	output_file = 'jira_data.json'
 	try:
-		opts, args = getopt.getopt(sys.argv[1:],"hi:o:a",["help", "single-input-file=", "single-output-file=", "multiple-input-files=", "multiple-output-files=", "auto"])
+		opts, args = getopt.getopt(sys.argv[1:],"hi:o:a",["help", "single-input-file=", "single-output-file=", "multiple-input-files=", "multiple-output-files=", "auto="])
 	except getopt.GetoptError:
 		print(f"\x1B[1mUnhandle option/argument\x1B[0m (wrong option or missing required argument)\n{TXT_USAGE}")
 		sys.exit(1)
@@ -299,6 +301,8 @@ if __name__ == "__main__":
 			sys.exit(0)
 		elif opt in ("-a", "--auto"):
 			AUTO = True
+			if arg:
+				AUTO_INDENT = arg
 		elif opt in ("-i", "--single-input-file"):
 			if INPUT_MULTIPLE_FILE:
 				print(f"\x1B[1mError:\x1B[0m You can not use single file input option while using multiple file option input too.\n{TXT_USAGE}")
