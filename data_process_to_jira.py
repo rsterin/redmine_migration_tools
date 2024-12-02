@@ -50,6 +50,16 @@ def process_projects(input_file, progress, task_id):
 		progress (Progress):
 		task_id (id): Id of the current task.
 	"""
+	STATUS_MAPPING = {
+		"Resolved": "Closed",
+		"Feedback": "Closed",
+		"In Progress": "In Progress",
+		"New": "Open"
+	}
+
+	def map_status(status):
+		return STATUS_MAPPING.get(status, "Open")
+
 	total = 0
 	try:
 		if INPUT_MULTIPLE_FILE:
@@ -72,12 +82,26 @@ def process_projects(input_file, progress, task_id):
 		progress.update(task_id, total=total)
 
 		jira_projects = []
+		allocated_keys = set()
+
 		for project in projects:
+			base_key = project["identifier"][:10].upper()
+			key = base_key
+
+			if key in allocated_keys:
+				counter = 1
+				while f"{base_key[:9].upper()}{counter}" in allocated_keys:
+					counter += 1
+				key = f"{base_key[:9].upper()}{counter}"
+
+			allocated_keys.add(key)
+
 			jira_project = {
 				"name": project["name"],
 				"id": project["id"],
-				"key": project["identifier"].upper(),
+				"key": key,
 				"description": project["description"],
+				"type": "software",
 				"versions": [],
 				"components": [],
 				"issues": []
@@ -96,7 +120,7 @@ def process_projects(input_file, progress, task_id):
 			issue_info = {
 				"priority": issue["priority"]["name"],
 				"description": issue.get("description", ""),
-				"status": issue["status"]["name"],
+				"status": map_status(issue["status"]["name"]),
 				"reporter": issue["author"]["name"],
 				"labels": [],
 				"watchers": [],
@@ -208,6 +232,7 @@ def process(input_file, output_file):
 			else:
 				with open(output_file, "w", encoding="utf-8") as file:
 					json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
+				os.chmod(output_file, 0o777)
 				print("All data saved to " + BOLD + f"{output_file}" + END)
 		else:
 			to_save = {
@@ -223,6 +248,7 @@ def process(input_file, output_file):
 				else:
 					with open(output_file + key + '.json', "w", encoding="utf-8") as file:
 						json.dump(consolidated_data[key], file, indent=4, ensure_ascii=False)
+					os.chmod(output_file + key + '.json', 0o777)
 					print("Data has been saved to " + BOLD + f"{output_file + key + '.json'}" + END)
 	else:
 		print(BOLD + "Error:\n" + END + "\tData fetching failed. No data was saved.")
@@ -285,6 +311,7 @@ def save_chunk(chunk, base_filename, part, key):
 	filename = f"{base_filename}_part{part}.json"
 	with open(filename, "w", encoding="utf-8") as file:
 		json.dump(chunk, file, indent=4, ensure_ascii=False)
+	os.chmod(filename, 0o777)
 	print("Chunk saved to " + BOLD + f"{filename}" + END)
 
 if __name__ == "__main__":
