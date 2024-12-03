@@ -1,1 +1,15 @@
-redmine_data.json
+# Byte-compiled files
+*.pyc
+__pycache__/
+
+# Logs
+logs/
+*.log
+
+# Outputs
+outputs/
+full-jira-data/
+full-redmine-data/
+
+# Environment
+.env
