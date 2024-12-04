@@ -3,7 +3,7 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeEl
 from srcs_process import config, logger, save
 from datetime import timedelta
 
-def process_projects(input_file, progress, task_id):
+def process_projects(input_file, progress, task_id, data):
 	"""
 	Processing projects and issues.
 
@@ -11,6 +11,7 @@ def process_projects(input_file, progress, task_id):
 		input_file (str): The file, path and/or prefix that should be taken as input.
 		progress (Progress):
 		task_id (id): Id of the current task.
+		data (dict): Dict that contains a list of users.
 
 	Returns:
 		dict: Processed projects.
@@ -127,6 +128,14 @@ def process_projects(input_file, progress, task_id):
 				"attachments": [],
 				"worklogs": []
 			}
+			assigned_to = issue.get("assigned_to")
+			if assigned_to:
+				assignee_id = assigned_to["id"]
+				for user in data["users"]:
+					if user["id"] == assignee_id:
+						issue_info["assignee"] = user["login"]
+						break
+
 			project_id = issue["project"]["id"]
 			for jira_project in jira_projects:
 				if jira_project["id"] == project_id:
@@ -160,7 +169,7 @@ def process_projects(input_file, progress, task_id):
 		print(config.BOLD + "Error: " + config.END + f"{err}")
 	return jira_projects
 
-def process_users(input_file, progress, task_id):
+def process_users(input_file, progress, task_id, data):
 	"""
 	Processing users.
 
@@ -219,8 +228,8 @@ def process(input_file, output_file):
 	"""
 	logger.info("Starting to process all data.")
 	process_todo = {
-		"projects": process_projects,
 		"users": process_users,
+		"projects": process_projects,
 	}
 
 	consolidated_data = {}
@@ -235,7 +244,7 @@ def process(input_file, output_file):
 	) as progress:
 		for key, process_function in process_todo.items():
 			task_id = progress.add_task(f"Processing {key}", total=None)
-			data = process_function(input_file, progress, task_id)
+			data = process_function(input_file, progress, task_id, consolidated_data)
 			consolidated_data[key] = data
 			logger.info(f"Completed processing {key}.")
 
