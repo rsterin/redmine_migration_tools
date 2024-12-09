@@ -52,7 +52,7 @@ def fetch_endpoint_data(endpoint, progress, task_id):
 			if total is None and "total_count" in data:
 				total = data["total_count"]
 				if key in ["projects", "issues"]:
-					total *= 5
+					total *= 7
 				progress.update(task_id, total=total)
 
 			all_data.extend(data.get(key, []))
@@ -75,7 +75,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		project_id (int): Id of the source project.
 		progress (Progress): Progress bar.
 		task_id (TaskID): Id of the current task.
-		download_dir (str): Directory to store downloaded files.
+		output_file (str): Directory to store downloaded files.
 
 	Returns:
 		dict: All of the associated data from a project.
@@ -87,6 +87,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		"issue_categories": fetch_data(f"/projects/{project_id}/issue_categories.json"),
 		"files": fetch_data(f"/projects/{project_id}/files.json"),
 	}
+	progress.update(task_id, advance=4)
 	logger.info(f"Completed fetching project data for project ID: {project_id}")
 
 	if "files" in project_data and isinstance(project_data["files"], dict):
@@ -107,7 +108,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 				file_path = os.path.join(cleaned_path, file_name)
 				try:
 					logger.info(f"Downloading file from {content_url}")
-					file_response = requests.get(content_url, headers=config.HEADERS, timeout=10)
+					file_response = requests.get(content_url, headers=config.HEADERS)
 					if file_response.status_code == 200:
 						with open(file_path, 'wb') as f:
 							f.write(file_response.content)
@@ -116,6 +117,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 						logger.error(f"Failed to download file from {content_url}: Status Code {file_response.status_code}")
 				except Exception as e:
 					logger.error(f"Error downloading file from {content_url}: {e}")
+	progress.update(task_id, advance=1)
 
 	try:
 		logger.info(f"Fetching Wiki index for project ID: {project_id}")
@@ -134,12 +136,10 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 						logger.error(f"Error fetching Wiki page {page_title} for project ID {project_id}: {e}")
 		else:
 			logger.warning(f"No Wiki pages found for project ID: {project_id}")
-
 	except Exception as e:
 		logger.error(f"Error fetching Wiki index for project ID {project_id}: {e}")
 		project_data["wiki"] = None
-
-	progress.update(task_id, advance=4)
+	progress.update(task_id, advance=1)
 	return project_data
 
 
