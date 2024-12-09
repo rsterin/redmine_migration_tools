@@ -30,6 +30,12 @@ def process_projects(input_file, progress, task_id, data):
 	def convert_hours_to_iso_duration(hours):
 		"""
 		Converts decimal hours to ISO 8601 duration format (e.g., PT1H50M).
+
+		Args:
+			hours (str): Number of hours to convert.
+
+		Returns:
+			str: Converted hours to ISO 8601.
 		"""
 		td = timedelta(hours=hours)
 		return isodate.duration_isoformat(td)
