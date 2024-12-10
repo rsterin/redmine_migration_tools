@@ -10,6 +10,7 @@ def fetch_data(endpoint, params=None):
 
 	Args:
 		endpoint (str): Endpoint to fetch.
+		params (dict): Dictionnary of params, e.g offset and limit.
 
 	Returns:
 		json: Response in JSON format.
@@ -17,7 +18,7 @@ def fetch_data(endpoint, params=None):
 	url = f"{config.BASE_URL}{endpoint}"
 	try:
 		logger.info(f"Fetching data from {url} with params {params}")
-		response = requests.get(url, headers=config.HEADERS, params=params, timeout=10)
+		response = requests.get(url, headers=config.HEADERS, params=params)
 		response.raise_for_status()
 		logger.info(f"Data fetched successfully from {url}")
 		return response.json()
