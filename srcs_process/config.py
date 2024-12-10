@@ -3,7 +3,7 @@ OUTPUT_SINGLE_FILE = False
 INPUT_MULTIPLE_FILE = False
 OUTPUT_MULTIPLE_FILE = False
 AUTO = False
-AUTO_INDENT = 5000
+AUTO_INDENT = 10000
 
 BOLD = "\x1B[1m"
 ITALIC = "\x1B[3m"
@@ -36,4 +36,4 @@ TXT_HELP = BOLD + "Options: " + END + "\n\
 \t\t⚠ It will clear the file if already exist or create it if not existing.\n\n\
 \t" + BOLD + "-a, --auto=LINE_PER_FILE" + END + " (recommended)\n\
 \t\tUse to split data in different file.\n\
-\t\tDefault: " + ITALIC + "5000 lines per file" + END + "."
+\t\tDefault: " + ITALIC + "10000 lines per file" + END + "."

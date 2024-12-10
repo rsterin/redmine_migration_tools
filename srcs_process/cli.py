@@ -20,7 +20,7 @@ def parse_args(argv):
 		"single_file_output": False,
 		"multiple_files_output": False,
 		"auto": False,
-		"auto_indent": 3000
+		"auto_indent": 10000
 	}
 
 	try:
