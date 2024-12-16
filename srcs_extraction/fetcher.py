@@ -22,6 +22,14 @@ def fetch_data(endpoint, params=None):
 		response.raise_for_status()
 		logger.info(f"Data fetched successfully from {url}")
 		return response.json()
+	except requests.exceptions.HTTPError as http_err:
+		if response.status_code == 403:
+			logger.warning(f"Failed to fetch data from {url}: Unauthorized access")
+			print(config.BOLD + "Warning: " + config.END + f"Unauthorized access to \"{url}\" (closed project?)")
+		else:
+			logger.error(f"HTTP error occurred: {http_err}")
+			print(config.BOLD + "Error: " + config.END + f"{http_err}")
+		return None
 	except Exception as err:
 		logger.error(f"Failed to fetch data from {url}: {err}")
 		print(config.BOLD + "Error: " + config.END + f"{err}")
@@ -81,12 +89,16 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 	Returns:
 		dict: All of the associated data from a project.
 	"""
+	offset = 0
+	limit = 100
+	params = {"offset": offset, "limit": limit}
+
 	logger.info(f"Fetching project-related data for project ID: {project_id}")
 	project_data = {
-		"memberships": fetch_data(f"/projects/{project_id}/memberships.json"),
-		"versions": fetch_data(f"/projects/{project_id}/versions.json"),
-		"issue_categories": fetch_data(f"/projects/{project_id}/issue_categories.json"),
-		"files": fetch_data(f"/projects/{project_id}/files.json"),
+		"memberships": fetch_data(f"/projects/{project_id}/memberships.json", params),
+		"versions": fetch_data(f"/projects/{project_id}/versions.json", params),
+		"issue_categories": fetch_data(f"/projects/{project_id}/issue_categories.json", params),
+		"files": fetch_data(f"/projects/{project_id}/files.json", params),
 	}
 	progress.update(task_id, advance=4)
 	logger.info(f"Completed fetching project data for project ID: {project_id}")
@@ -122,7 +134,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 
 	try:
 		logger.info(f"Fetching Wiki index for project ID: {project_id}")
-		wiki_index = fetch_data(f"/projects/{project_id}/wiki/index.json")
+		wiki_index = fetch_data(f"/projects/{project_id}/wiki/index.json", params)
 		project_data["wiki"] = {"pages": []}
 
 		if wiki_index and "wiki_pages" in wiki_index:
@@ -131,7 +143,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 				if page_title:
 					try:
 						logger.info(f"Fetching Wiki page: {page_title}")
-						page_content = fetch_data(f"/projects/{project_id}/wiki/{page_title}.json")
+						page_content = fetch_data(f"/projects/{project_id}/wiki/{page_title}.json", params)
 						project_data["wiki"]["pages"].append(page_content)
 					except Exception as e:
 						logger.error(f"Error fetching Wiki page {page_title} for project ID {project_id}: {e}")
@@ -156,9 +168,13 @@ def fetch_issue_data(issue_id, progress, task_id):
 	Returns:
 		dict: All of the associated data from a issue.
 	"""
+	offset = 0
+	limit = 100
+	params = {"offset": offset, "limit": limit}
+
 	logger.info(f"Fetching issue-related data for issue ID: {issue_id}")
-	relations = fetch_data(f"/issues/{issue_id}/relations.json")
-	progress.update(task_id, advance=4)
+	relations = fetch_data(f"/issues/{issue_id}/relations.json", params)
+	progress.update(task_id, advance=6)
 	logger.info(f"Completed fetching issue data for issue ID: {issue_id}")
 	return {"relations": relations}
 
