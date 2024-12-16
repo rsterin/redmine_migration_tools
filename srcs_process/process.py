@@ -147,6 +147,7 @@ def process_projects(input_file, progress, task_id, data):
 				if jira_project["id"] == project_id:
 					jira_project["issues"].append(issue_info)
 					break
+
 			progress.update(task_issues, advance=1)
 			progress.update(task_id, advance=1)
 			logger.info(f"Processed issue: {issue['subject']}")
@@ -224,6 +225,75 @@ def process_users(input_file, progress, task_id, data):
 		print(config.BOLD + "Error: " + config.END + f"{err}")
 	return jira_users
 
+def process_links(input_file, progress, task_id, data):
+	"""
+	Processing links.
+
+	Args:
+		input_file (str): The file, path and/or prefix that should be take as input.
+		progress (Progress):
+		task_id (id): Id of the current task.
+
+	Returns:
+		dict: Processed links.
+	"""
+	logger.info("Starting to process links.")
+	total = 0
+	jira_links = []
+	try:
+		if config.INPUT_MULTIPLE_FILE:
+			input_file += "issues.json"
+
+		logger.info(f"Loading users from {input_file}.")
+		with open(input_file, 'r') as file:
+			data = json.load(file)
+
+		if isinstance(data, dict) and "issues" in data:
+			issues = data["issues"]
+		elif isinstance(data, list):
+			issues = data
+		else:
+			raise ValueError("Unexpected input format. Expected a list or an object with a 'relations' key.")
+
+		for issue in issues:
+			if isinstance(issue, dict) and "relations" in issue:
+				relations_data = issue["relations"]
+				if relations_data and "relations" in relations_data:
+					relations = relations_data["relations"]
+				else:
+					relations = []
+			else:
+				raise ValueError("Unexpected input format. Expected a list or an object with a 'relations' key.")
+
+			total += len(relations)
+
+		logger.info(f"Total links to process: {total}.")
+		progress.update(task_id, total=total)
+
+		for issue in issues:
+			if isinstance(issue, dict) and "relations" in issue:
+				relations_data = issue["relations"]
+				if relations_data and "relations" in relations_data:
+					relations = relations_data["relations"]
+				else:
+					relations = []
+			else:
+				raise ValueError("Unexpected input format. Expected a list or an object with a 'relations' key.")
+
+			for relation in relations:
+				jira_link = {
+					"sourceId": relation["issue_id"],
+					"destinationId": relation["issue_to_id"],
+					"name": relation["relation_type"]
+				}
+				jira_links.append(jira_link)
+				progress.update(task_id, advance=1)
+				logger.info(f"Processed link from {relation['issue_id']} to {relation['issue_to_id']}")
+	except Exception as err:
+		logger.error(f"Error processing links: {err} {issue}")
+		print(config.BOLD + "Error: " + config.END + f"{err}")
+	return jira_links
+
 def process(input_file, output_file):
 	"""
 	Process every data and save it into JSON file(s).
@@ -236,6 +306,7 @@ def process(input_file, output_file):
 	process_todo = {
 		"users": process_users,
 		"projects": process_projects,
+		"links": process_links
 	}
 
 	consolidated_data = {}
