@@ -94,6 +94,13 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 	params = {"offset": offset, "limit": limit}
 
 	logger.info(f"Fetching project-related data for project ID: {project_id}")
+
+	task_memberships = progress.add_task("↪ Fetching memberships", total=None)
+	task_versions = progress.add_task("↪ Fetching versions", total=None)
+	task_issue_categories = progress.add_task("↪ Fetching issues categories", total=None)
+	task_files = progress.add_task("↪ Fetching files", total=None)
+	task_wikis = progress.add_task("↪ Fetching wikis", total=None)
+
 	project_data = {
 		"memberships": fetch_data(f"/projects/{project_id}/memberships.json", params),
 		"versions": fetch_data(f"/projects/{project_id}/versions.json", params),
@@ -101,6 +108,10 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		"files": fetch_data(f"/projects/{project_id}/files.json", params),
 	}
 	progress.update(task_id, advance=4)
+	progress.update(task_memberships, total=len(project_data["memberships"]) if project_data["memberships"] else 0, advance=len(project_data["memberships"]) if project_data["memberships"] else 0)
+	progress.update(task_versions, total=len(project_data["versions"]) if project_data["versions"] else 0, advance=len(project_data["versions"]) if project_data["versions"] else 0)
+	progress.update(task_issue_categories, total=len(project_data["issue_categories"]) if project_data["issue_categories"] else 0, advance=len(project_data["issue_categories"]) if project_data["issue_categories"] else 0)
+	progress.update(task_files, total=len(project_data["files"]) + 1 if project_data["files"] else 0, advance=1 if project_data["files"] else 0)
 	logger.info(f"Completed fetching project data for project ID: {project_id}")
 
 	if "files" in project_data and isinstance(project_data["files"], dict):
@@ -126,11 +137,16 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 						with open(file_path, 'wb') as f:
 							f.write(file_response.content)
 						logger.info(f"Successfully downloaded {file_name}")
+						progress.update(task_files, advance=1)
 					else:
 						logger.error(f"Failed to download file from {content_url}: Status Code {file_response.status_code}")
 				except Exception as e:
 					logger.error(f"Error downloading file from {content_url}: {e}")
 	progress.update(task_id, advance=1)
+	progress.remove_task(task_memberships)
+	progress.remove_task(task_versions)
+	progress.remove_task(task_issue_categories)
+	progress.remove_task(task_files)
 
 	try:
 		logger.info(f"Fetching Wiki index for project ID: {project_id}")
@@ -138,6 +154,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		project_data["wiki"] = {"pages": []}
 
 		if wiki_index and "wiki_pages" in wiki_index:
+			progress.update(task_wikis, total=len(wiki_index["wiki_pages"]))
 			for page in wiki_index["wiki_pages"]:
 				page_title = page.get("title")
 				if page_title:
@@ -145,6 +162,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 						logger.info(f"Fetching Wiki page: {page_title}")
 						page_content = fetch_data(f"/projects/{project_id}/wiki/{page_title}.json", params)
 						project_data["wiki"]["pages"].append(page_content)
+						progress.update(task_wikis, advance=1)
 					except Exception as e:
 						logger.error(f"Error fetching Wiki page {page_title} for project ID {project_id}: {e}")
 		else:
@@ -153,6 +171,7 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 		logger.error(f"Error fetching Wiki index for project ID {project_id}: {e}")
 		project_data["wiki"] = None
 	progress.update(task_id, advance=1)
+	progress.remove_task(task_wikis)
 	return project_data
 
 
@@ -172,8 +191,11 @@ def fetch_issue_data(issue_id, progress, task_id):
 	limit = 100
 	params = {"offset": offset, "limit": limit}
 
+	task_relations = progress.add_task("↪ Fetching relations", total=None)
+
 	logger.info(f"Fetching issue-related data for issue ID: {issue_id}")
 	relations = fetch_data(f"/issues/{issue_id}/relations.json", params)
+	progress.update(task_relations, total=len(relations) if relations else 0, advance=len(relations) if relations else 0)
 	progress.update(task_id, advance=6)
 	logger.info(f"Completed fetching issue data for issue ID: {issue_id}")
 	return {"relations": relations}
