@@ -2,7 +2,7 @@ import json
 import os
 from srcs_process import config, logger
 
-def split_and_save(data, base_filename, key=None):
+def split_and_save(data, base_filename, progress, task_id, key=None):
 	"""
 	Split any dictionary or list containing lists into multiple JSON files, ensuring each file
 	does not exceed 1500 lines.
@@ -11,6 +11,7 @@ def split_and_save(data, base_filename, key=None):
 		data (dict or list): The data to be split and saved.
 		base_filename (str): The base filename for the split files.
 	"""
+	tmp = key
 	try:
 		logger.info("Starting split_and_save function.")
 
@@ -18,7 +19,7 @@ def split_and_save(data, base_filename, key=None):
 			logger.debug("Input data is a list, converting to dictionary.")
 			data = {key: data}
 
-		part = 1
+		part = 0
 		current_chunk = {}
 		current_line_count = 0
 
@@ -27,6 +28,36 @@ def split_and_save(data, base_filename, key=None):
 		if not list_keys:
 			logger.warning("No lists found in the provided data to split.")
 			return
+
+		for key, values in list_keys.items():
+			logger.info(f"Counting key: {key}")
+			for item in values:
+				chunk_data = {key: [item]}
+				chunk_lines = len(json.dumps(chunk_data, indent=4, ensure_ascii=False).splitlines()) - 4
+
+				if current_line_count + chunk_lines > int(config.AUTO_INDENT):
+					if current_chunk:
+						part += 1
+					current_chunk = {key: [item]}
+					current_line_count = chunk_lines
+				else:
+					if key in current_chunk:
+						current_chunk[key].append(item)
+					else:
+						current_chunk[key] = [item]
+					current_line_count += chunk_lines
+
+		if current_chunk:
+			part += 1
+
+		if tmp:
+			task_save = progress.add_task(f"↪ Saving {key} into file of {config.AUTO_INDENT} line each", total=part)
+		else:
+			task_save = progress.add_task(f"↪ Saving into file of {config.AUTO_INDENT} line each", total=part)
+
+		part = 1
+		current_chunk = {}
+		current_line_count = 0
 
 		for key, values in list_keys.items():
 			logger.info(f"Processing key: {key}")
@@ -39,6 +70,7 @@ def split_and_save(data, base_filename, key=None):
 						logger.debug(f"Saving chunk for part {part}.")
 						save_chunk(current_chunk, base_filename, part, key)
 						part += 1
+						progress.update(task_save, advance=1)
 					current_chunk = {key: [item]}
 					current_line_count = chunk_lines
 				else:
@@ -51,7 +83,9 @@ def split_and_save(data, base_filename, key=None):
 		if current_chunk:
 			logger.debug(f"Saving final chunk for part {part}.")
 			save_chunk(current_chunk, base_filename, part, key)
+			progress.update(task_save, advance=1)
 
+		progress.update(task_id, advance=1)
 		logger.info("Completed split_and_save function successfully.")
 	except Exception as e:
 		logger.error(f"An error occurred in split_and_save: {str(e)}", exc_info=True)
