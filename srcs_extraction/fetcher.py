@@ -198,6 +198,7 @@ def fetch_issue_data(issue_id, progress, task_id):
 	progress.update(task_relations, total=len(relations) if relations else 0, advance=len(relations) if relations else 0)
 	progress.update(task_id, advance=6)
 	logger.info(f"Completed fetching issue data for issue ID: {issue_id}")
+	progress.remove_task(task_relations)
 	return {"relations": relations}
 
 def fetch_all_data(output_file):
