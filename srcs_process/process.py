@@ -325,58 +325,70 @@ def process(input_file, output_file):
 			consolidated_data[key] = data
 			logger.info(f"Completed processing {key}.")
 
-	if consolidated_data:
-		cleaned_path = os.path.dirname(output_file)
-		if cleaned_path:
-			os.makedirs(cleaned_path, exist_ok=True)
-			logger.info(f"Path {cleaned_path}/ has been created successfully.")
-			print("Path " + config.BOLD + f"{cleaned_path}/" + config.END + " has been created")
+		if consolidated_data:
+			cleaned_path = os.path.dirname(output_file)
+			if cleaned_path:
+				os.makedirs(cleaned_path, exist_ok=True)
+				logger.info(f"Path {cleaned_path}/ has been created successfully.")
+				print("Path " + config.BOLD + f"{cleaned_path}/" + config.END + " has been created")
 
-		if config.OUTPUT_SINGLE_FILE:
-			logger.info("Saving data to a single output file.")
-			if config.AUTO:
-				try:
-					save.split_and_save(consolidated_data, output_file)
-					logger.info("Data has been successfully split and saved in auto mode.")
-					print("All data has been saved")
-				except Exception as e:
-					logger.error(f"Error while splitting and saving data: {e}", exc_info=True)
-					print(config.BOLD + "Error:\n" + config.END + f"{e}")
-			else:
-				try:
-					with open(output_file, "w", encoding="utf-8") as file:
-						json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
-					os.chmod(output_file, 0o777)
-					logger.info(f"All data saved to {output_file}.")
-					print("All data saved to " + config.BOLD + f"{output_file}" + config.END)
-				except Exception as e:
-					logger.error(f"Error while saving data to {output_file}: {e}", exc_info=True)
-					print(config.BOLD + "Error:\n" + config.END + f"{e}")
-		else:
-			to_save = {
-				"projects",
-				"users"
-			}
-			logger.info("Saving data to separate files.")
-			for key in to_save:
+			if config.OUTPUT_SINGLE_FILE:
+				task_save = progress.add_task("Saving", total=1)
+				logger.info("Saving data to a single output file.")
 				if config.AUTO:
 					try:
-						save.split_and_save(consolidated_data[key], output_file, key)
-						logger.info(f"Data for {key} successfully split and saved in auto mode.")
-						print("All of " + config.BOLD + f"{key}" + config.END + " data has been saved")
+						save.split_and_save(consolidated_data, output_file, progress, task_save)
+						logger.info("Data has been successfully split and saved in auto mode.")
+						print("All data has been saved")
 					except Exception as e:
-						logger.error(f"Error while saving {key} data: {e}", exc_info=True)
+						logger.error(f"Error while splitting and saving data: {e}", exc_info=True)
 						print(config.BOLD + "Error:\n" + config.END + f"{e}")
 				else:
 					try:
-						with open(output_file + key + '.json', "w", encoding="utf-8") as file:
-							json.dump(consolidated_data[key], file, indent=4, ensure_ascii=False)
-						os.chmod(output_file + key + '.json', 0o777)
-						logger.info(f"Data for {key} saved to {output_file + key + '.json'}.")
-						print("Data has been saved to " + config.BOLD + f"{output_file + key + '.json'}" + config.END)
+						task_subsave = progress.add_task(f"↪ Saving into {output_file}", total=1)
+						with open(output_file, "w", encoding="utf-8") as file:
+							json.dump(consolidated_data, file, indent=4, ensure_ascii=False)
+						os.chmod(output_file, 0o777)
+						progress.update(task_subsave, advance=1)
+						progress.update(task_save, advance=1)
+						logger.info(f"All data saved to {output_file}.")
+						print("All data saved to " + config.BOLD + f"{output_file}" + config.END)
 					except Exception as e:
-						logger.error(f"Error while saving {key} data to {output_file + key + '.json'}: {e}", exc_info=True)
+						logger.error(f"Error while saving data to {output_file}: {e}", exc_info=True)
 						print(config.BOLD + "Error:\n" + config.END + f"{e}")
-	else:
-		logger.error("Data processing failed. No data to save.")
-		print(config.BOLD + "Error:\n" + config.END + "\tData processing failed. No data was saved.")
+			else:
+				to_save = {
+					"projects",
+					"users",
+					"links"
+				}
+				logger.info("Saving data to separate files.")
+				total = 1
+				task_save = progress.add_task("Saving", total=total)
+				for key in to_save:
+					progress.update(task_save, total=total)
+					if config.AUTO:
+						try:
+							save.split_and_save(consolidated_data[key], output_file, progress, task_save, key)
+							logger.info(f"Data for {key} successfully split and saved in auto mode.")
+							print("All of " + config.BOLD + f"{key}" + config.END + " data has been saved")
+						except Exception as e:
+							logger.error(f"Error while saving {key} data: {e}", exc_info=True)
+							print(config.BOLD + "Error:\n" + config.END + f"{e}")
+					else:
+						try:
+							task_subsave = progress.add_task(f"↪ Saving into {output_file + key + '.json'}", total=1)
+							with open(output_file + key + '.json', "w", encoding="utf-8") as file:
+								json.dump(consolidated_data[key], file, indent=4, ensure_ascii=False)
+							os.chmod(output_file + key + '.json', 0o777)
+							progress.update(task_subsave, advance=1)
+							progress.update(task_save, advance=1)
+							logger.info(f"Data for {key} saved to {output_file + key + '.json'}.")
+							print("Data has been saved to " + config.BOLD + f"{output_file + key + '.json'}" + config.END)
+						except Exception as e:
+							logger.error(f"Error while saving {key} data to {output_file + key + '.json'}: {e}", exc_info=True)
+							print(config.BOLD + "Error:\n" + config.END + f"{e}")
+					total += 1
+		else:
+			logger.error("Data processing failed. No data to save.")
+			print(config.BOLD + "Error:\n" + config.END + "\tData processing failed. No data was saved.")
