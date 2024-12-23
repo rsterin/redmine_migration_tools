@@ -53,26 +53,29 @@ def fetch_endpoint_data(endpoint, progress, task_id):
 	total = None
 
 	logger.info(f"Starting fetch for endpoint: {endpoint}")
+	key = endpoint.strip("/").split(".")[0]
+
 	while True:
 		params = {"offset": offset, "limit": limit}
 		data = fetch_data(endpoint, params)
 		if data:
-			key = endpoint.strip("/").split(".")[0]
 			if total is None and "total_count" in data:
 				total = data["total_count"]
 				if key in ["projects", "issues"]:
 					total *= 7
 				progress.update(task_id, total=total)
 
-			all_data.extend(data.get(key, []))
-			progress.update(task_id, advance=len(data.get(key, [])))
+			fetched_data = data.get(key, [])
+			all_data.extend(fetched_data)
+			progress.update(task_id, advance=len(fetched_data))
 
-			if len(data.get(key, [])) < limit:
+			if len(fetched_data) < limit:
 				break
 			offset += limit
 		else:
 			logger.warning(f"No data returned for {endpoint} at offset {offset}")
 			break
+
 	logger.info(f"Completed fetch for endpoint: {endpoint}, total records: {len(all_data)}")
 	return all_data
 
