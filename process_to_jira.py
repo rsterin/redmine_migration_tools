@@ -1,5 +1,5 @@
 import sys
-from srcs_process import config, cli, logger, process
+from srcs_process_to_jira import config, cli, logger, process
 
 def main():
 	args = cli.parse_args(sys.argv[1:])

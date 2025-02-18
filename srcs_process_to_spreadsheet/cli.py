@@ -1,6 +1,6 @@
 import getopt
 import sys
-from srcs_process import config, logger
+from srcs_process_to_spreadsheet import config, logger
 
 def parse_args(argv):
 	"""
@@ -14,18 +14,14 @@ def parse_args(argv):
 	"""
 	args = {
 		"input_file": "outputs/redmine_data.json",
-		"output_file": "outputs/jira_data.json",
+		"output_path": "outputs/",
 		"single_file_input": False,
-		"multiple_files_input": False,
-		"single_file_output": False,
-		"multiple_files_output": False,
-		"auto": False,
-		"auto_indent": 10000
+		"multiple_files_input": False
 	}
 
 	try:
 		opts, _ = getopt.getopt(
-			argv, "hi:o:a",["help", "single-input-file=", "single-output-file=", "multiple-input-files=", "multiple-output-files=", "auto="]
+			argv, "hi:o:",["help", "single-input-file=", "multiple-input-files=", "output-path="]
 		)
 	except getopt.GetoptError as e:
 		logger.error(f"Argument parsing error: {e}")
@@ -38,31 +34,20 @@ def parse_args(argv):
 			logger.info("Help requested. Displaying usage and help information.")
 			print(config.TXT_USAGE + "\n" + config.TXT_HELP)
 			sys.exit(0)
-		elif opt in ("-a", "--auto"):
-			args["auto"] = True
-			if arg:
-				args["auto_indent"] = arg
-			logger.debug(f"Auto set to: {arg}")
 		elif opt in ("-i", "--single-input-file"):
 			args["input_file"] = arg
 			logger.debug(f"Single input file set to: {arg}")
-		elif opt in ("-o", "--single-output-file"):
-			args["output_file"] = arg
-			logger.debug(f"Single output file set to: {arg}")
 		elif opt in ("--multiple-input-files"):
 			args["multiple_files_input"] = True
 			args["input_file"] = ''
 			if arg:
 				args["input_file"] = arg.removesuffix('.json')
 			logger.debug(f"Multiple files input prefix set to: {args['input_file']}")
-		elif opt in ("--multiple-output-files"):
-			args["multiple_files_output"] = True
-			args["output_file"] = ''
-			if arg:
-				args["output_file"] = arg.removesuffix('.json')
-			logger.debug(f"Multiple files output prefix set to: {args['output_file']}")
+		elif opt in ("-o", "--output-path"):
+			args["output_path"] = arg
+			logger.debug(f"Single output path set to: {arg}")
 
-	if (args["single_file_input"] and args["multiple_files_input"]) or (args["single_file_output"] and args["multiple_files_output"]):
+	if (args["single_file_input"] and args["multiple_files_input"]):
 		logger.error("Both single file and multiple files options set. Exiting.")
 		print(config.BOLD + "Error: " + config.END + "You cannot use single file and multiple files options at the same time.")
 		print(config.TXT_USAGE)

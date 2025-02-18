@@ -9,11 +9,11 @@ def fetch_data(endpoint, params=None):
 	Fetch data from an endpoint using parameters.
 
 	Args:
-		endpoint (str): Endpoint to fetch.
-		params (dict): Dictionnary of params, e.g offset and limit.
+		endpoint (str): The endpoint to fetch data from.
+		params (dict, optional): Dictionary of parameters, e.g., offset and limit. Defaults to None.
 
 	Returns:
-		json: Response in JSON format.
+		dict: The response data in JSON format, or None if an error occurs.
 	"""
 	url = f"{config.BASE_URL}{endpoint}"
 	try:
@@ -40,9 +40,9 @@ def fetch_endpoint_data(endpoint, progress, task_id):
 	Fetch all data from a given endpoint.
 
 	Args:
-		endpoint (str): Endpoint to fetch.
-		progress (Progress): Progress bar.
-		task_id (TaskID): Id of the current task.
+		endpoint (str): The endpoint to fetch data from.
+		progress (Progress): The progress object to update the task progress.
+		task_id (TaskID): The ID of the task to update progress.
 
 	Returns:
 		dict: All of the fetched data.
@@ -84,13 +84,13 @@ def fetch_project_data(project_id, progress, task_id, output_file):
 	Fetch all related data for a given project, including downloading files.
 
 	Args:
-		project_id (int): Id of the source project.
-		progress (Progress): Progress bar.
-		task_id (TaskID): Id of the current task.
-		output_file (str): Directory to store downloaded files.
+		project_id (int): The ID of the source project.
+		progress (Progress): The progress object to update the task progress.
+		task_id (TaskID): The ID of the task to update progress.
+		output_file (str): The directory to store downloaded files.
 
 	Returns:
-		dict: All of the associated data from a project.
+		dict: All of the associated data from the project.
 	"""
 	offset = 0
 	limit = 100
@@ -183,12 +183,12 @@ def fetch_issue_data(issue_id, progress, task_id):
 	Fetch all related data for a given issue.
 
 	Args:
-		issue_id (int): Id of the source issue.
-		progress (Progress): Progress bar.
-		task_id (TaskID): Id of the current task.
+		issue_id (int): The ID of the source issue.
+		progress (Progress): The progress object to update the task progress.
+		task_id (TaskID): The ID of the task to update progress.
 
 	Returns:
-		dict: All of the associated data from a issue.
+		dict: All of the associated data from the issue.
 	"""
 	offset = 0
 	limit = 100
@@ -209,7 +209,10 @@ def fetch_all_data(output_file):
 	Fetch all data from key endpoints and save it into JSON file(s).
 
 	Args:
-		output_file (str): The file, path and/or prefix that should be take as output.
+		output_file (str): The file, path, and/or prefix that should be used as output.
+
+	Returns:
+		None
 	"""
 	consolidated_data = {}
 
@@ -240,11 +243,14 @@ def fetch_all_data(output_file):
 
 def save_data(output_file, data):
 	"""
-	Managing what to do with the extracted data.
+	Save the extracted data to JSON files.
 
 	Args:
-		output_file (str): The file, path and/or prefix that should be take as output.
-		data (dict): All of the data that as been extracted.
+		output_file (str): The file, path, and/or prefix that should be used as output.
+		data (dict): All of the data that has been extracted.
+
+	Returns:
+		None
 	"""
 	if data:
 		cleaned_path = os.path.dirname(output_file)
