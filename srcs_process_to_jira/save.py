@@ -1,15 +1,20 @@
 import json
 import os
-from srcs_process import config, logger
+from srcs_process_to_jira import config, logger
 
 def split_and_save(data, base_filename, progress, task_id, key=None):
 	"""
-	Split any dictionary or list containing lists into multiple JSON files, ensuring each file
-	does not exceed 1500 lines.
+	Split any dictionary or list containing lists into multiple JSON files, ensuring each file does not exceed a specified number of lines.
 
 	Args:
 		data (dict or list): The data to be split and saved.
 		base_filename (str): The base filename for the split files.
+		progress (Progress): The progress object to update the task progress.
+		task_id (int): The ID of the task to update progress.
+		key (str, optional): The key to use for the data if it is a list. Defaults to None.
+
+	Returns:
+		None
 	"""
 	tmp = key
 	try:
@@ -98,6 +103,10 @@ def save_chunk(chunk, base_filename, part, key):
 		chunk (dict): The chunk of data to save.
 		base_filename (str): The base filename.
 		part (int): The part number.
+		key (str): The key associated with the chunk of data.
+
+	Returns:
+		None
 	"""
 	try:
 		logger.debug("Starting save_chunk function.")

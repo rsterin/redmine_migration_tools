@@ -1,20 +1,20 @@
 import json, os, isodate
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn, TimeElapsedColumn
-from srcs_process import config, logger, save
+from srcs_process_to_jira import config, logger, save
 from datetime import timedelta
 
 def process_projects(input_file, progress, task_id, data):
 	"""
-	Processing projects and issues.
+	Processes projects and issues from the input file.
 
 	Args:
-		input_file (str): The file, path and/or prefix that should be taken as input.
-		progress (Progress):
-		task_id (id): Id of the current task.
-		data (dict): Dict that contains a list of users.
+		input_file (str): The file, path, and/or prefix that should be taken as input.
+		progress (Progress): Rich progress object for displaying progress.
+		task_id (int): ID of the current task.
+		data (dict): Dictionary that contains a list of users.
 
 	Returns:
-		dict: Processed projects.
+		list: List of processed JIRA projects.
 	"""
 	logger.info("Starting to process projects and issues.")
 	STATUS_MAPPING = {
@@ -178,15 +178,15 @@ def process_projects(input_file, progress, task_id, data):
 
 def process_users(input_file, progress, task_id, data):
 	"""
-	Processing users.
+	Processes users from the input file.
 
 	Args:
-		input_file (str): The file, path and/or prefix that should be take as input.
-		progress (Progress):
-		trask_id (id): Id of the current task.
+		input_file (str): The file, path, and/or prefix that should be taken as input.
+		progress (Progress): Rich progress object for displaying progress.
+		task_id (int): ID of the current task.
 
 	Returns:
-		dict: Processed users.
+		list: List of processed JIRA users.
 	"""
 	logger.info("Starting to process users.")
 	total = 0
@@ -227,15 +227,15 @@ def process_users(input_file, progress, task_id, data):
 
 def process_links(input_file, progress, task_id, data):
 	"""
-	Processing links.
+	Processes links from the input file.
 
 	Args:
-		input_file (str): The file, path and/or prefix that should be take as input.
-		progress (Progress):
-		task_id (id): Id of the current task.
+		input_file (str): The file, path, and/or prefix that should be taken as input.
+		progress (Progress): Rich progress object for displaying progress.
+		task_id (int): ID of the current task.
 
 	Returns:
-		dict: Processed links.
+		list: List of processed JIRA links.
 	"""
 	logger.info("Starting to process links.")
 	total = 0
@@ -296,11 +296,14 @@ def process_links(input_file, progress, task_id, data):
 
 def process(input_file, output_file):
 	"""
-	Process every data and save it into JSON file(s).
+	Processes all data and saves it into JSON file(s).
 
 	Args:
-		input_file (str): The file, path and/or prefix that should be take as input.
-		output_file (str): The file, path and/or prefix that should be take as output.
+		input_file (str): The file, path, and/or prefix that should be taken as input.
+		output_file (str): The file, path, and/or prefix that should be taken as output.
+
+	Returns:
+		None
 	"""
 	logger.info("Starting to process all data.")
 	process_todo = {
@@ -392,3 +395,4 @@ def process(input_file, output_file):
 		else:
 			logger.error("Data processing failed. No data to save.")
 			print(config.BOLD + "Error:\n" + config.END + "\tData processing failed. No data was saved.")
+

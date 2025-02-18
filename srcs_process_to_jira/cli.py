@@ -1,6 +1,6 @@
 import getopt
 import sys
-from srcs_process import config, logger
+from srcs_process_to_jira import config, logger
 
 def parse_args(argv):
 	"""
