@@ -10,7 +10,7 @@ END = "\x1B[0m"
 TXT_USAGE = BOLD + "Usage: " + END + "(e.g)\n\
 \tpython3 extract_redmine_data.py " + ITALIC + "-h -a <API_KEY> -u <URL> -s <SINGLE_OUTPUT_FILE> -m -e <ENDPOINT>" + END + "\n\
 \tOR\n\
-\tpython3 extract_redmine_data.py " + ITALIC + "--help --api-key=<API_KEY> --ulr=<URL> --single-file=<SINGLE_OUTPUT_FILE> --multiple-files=<MULTIPLE_OUTPUT_FILE> --endpoint=<ENDPOINT>" + END
+\tpython3 extract_redmine_data.py " + ITALIC + "--help --api-key=<API_KEY> --url=<URL> --single-file=<SINGLE_OUTPUT_FILE> --multiple-files=<MULTIPLE_OUTPUT_FILE> --endpoint=<ENDPOINT>" + END
 
 TXT_HELP = BOLD + "Options: " + END + "\n\
 \t" + BOLD + "-h, -help" + END + "\n\
