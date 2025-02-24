@@ -264,7 +264,7 @@ def save_data(output_file, data):
 			logger.info(f"All data saved to {output_file}")
 		else:
 			for key, value in data.items():
-				file_path = f"{output_file}_{key}.json"
+				file_path = f"{output_file}{key}.json"
 				with open(file_path, "w", encoding="utf-8") as file:
 					json.dump(value, file, indent=4, ensure_ascii=False)
 				logger.info(f"Data for {key} saved to {file_path}")
