@@ -4,7 +4,7 @@ from datetime import datetime
 
 os.makedirs("logs", exist_ok=True)
 
-log_filename = os.path.join("logs", datetime.now().strftime("process_redmine_%Y-%m-%d_%H-%M-%S.log"))
+log_filename = os.path.join("logs", datetime.now().strftime("process_to_jira_%Y-%m-%d_%H-%M-%S.log"))
 
 logging.basicConfig(
     level=logging.NOTSET,
