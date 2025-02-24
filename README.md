@@ -2,6 +2,8 @@
 
 This repository contains a set of Python tools for extracting data from Redmine, processing it, and exporting it to either Jira or spreadsheet format. The tools are designed to work together as part of a migration pipeline.
 
+Tried on version 3.4.6 of Redmine.
+
 ## Components
 
 The toolkit consists of three main scripts:
