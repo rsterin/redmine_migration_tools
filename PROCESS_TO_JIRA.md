@@ -19,8 +19,8 @@ python3 process_to_jira.py [OPTIONS]
 - `-h`, `--help`: Print an helpful paragraph
 - `-i`, `--single-input-file`: Path to input Redmine data file (default: `outputs/redmine_data.json`)
 - `-o`, `--single-output-file`: Path to output Jira data file (default: `outputs/jira_data.json`)
-- `--multiple-files-input`: Use multiple input files instead of a single file, type the same path and file prefix as for the extraction
-- `--multiple-files-output`: Use multiple output files instead of a single file (recommended)
+- `--multiple-input-files`: Use multiple input files instead of a single file, type the same path and file prefix as for the extraction
+- `--multiple-output-files`: Use multiple output files instead of a single file (recommended)
 - `-a`, `--auto`: Enable automatic indentation in JSON output (default: 10 000 lines per file) (recommended)
 
 ### Examples
@@ -37,7 +37,7 @@ python process_to_jira.py --single-input-file single_path/my_project_data.json -
 
 Using multiple files for both input and output:
 ```bash
-python process_to_jira.py --multiple-files-input multiple_path/my_ --multiple-files-output multiple_path/jira_
+python process_to_jira.py --multiple-input-files multiple_path/my_ --multiple-output-files multiple_path/jira_
 ```
 
 Enabling indentation:

@@ -18,8 +18,8 @@ python3 process_to_spreadsheet.py [OPTIONS]
 
 - `-h`, `--help`: Print an helpful paragraph
 - `-i`, `--single-input-file`: Path to input Redmine data file (default: `outputs/redmine_data.json`)
-- `*o`, `--output-path`: Directory path for output spreadsheets (default: `outputs/`)
-- `--multiple-files-input`: Use multiple input files instead of a single file
+- `-o`, `--output-path`: Directory path for output spreadsheets (default: `outputs/`)
+- `--multiple-input-files`: Use multiple input files instead of a single file
 
 ### Examples
 
@@ -48,7 +48,7 @@ python3 process_to_spreadsheet.py --multiple-files-input multiple_path/my_
 
 ### Multiple Files Input Mode
 
-When `--multiple-files-input` is specified, the script expects multiple JSON files in the input directory, each containing data from a different Redmine endpoint. This allows for more organized processing and can help with large datasets.
+When `--multiple-input-files` is specified, the script expects multiple JSON files in the input directory, each containing data from a different Redmine endpoint. This allows for more organized processing and can help with large datasets.
 
 ### Spreadsheet Organization
 
