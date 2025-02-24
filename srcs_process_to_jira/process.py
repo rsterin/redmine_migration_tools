@@ -139,7 +139,7 @@ def process_projects(input_file, progress, task_id, data):
 				assignee_id = assigned_to["id"]
 				for user in data["users"]:
 					if user["id"] == assignee_id:
-						issue_info["assignee"] = user["login"]
+						issue_info["assignee"] = user["name"]
 						break
 
 			project_id = issue["project"]["id"]
@@ -212,6 +212,7 @@ def process_users(input_file, progress, task_id, data):
 		jira_users = []
 		for user in users:
 			jira_user = {
+				"id": user["id"],
 				"name": f"{user['login']}",
 				"groups": [],
 				"email": user["mail"],
