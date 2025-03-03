@@ -1,5 +1,4 @@
 import subprocess
-from srcs_redmine_migration import cli, tkinter
 
 BOLD = "\x1B[1m"
 ITALIC = "\x1B[3m"
@@ -13,9 +12,11 @@ def main():
 	print(INTRO)
 
 	try:
-		import tkinter as tk
+		import tkinter
+		from srcs_redmine_migration import tkinter
 		redmine_url, api_key, output_path, multiple_files, endpoints, process, auto, auto_indent = tkinter.tkinter_cli()
 	except ImportError:
+		from srcs_redmine_migration import cli
 		redmine_url, api_key, output_path, multiple_files, endpoints, process, auto, auto_indent = cli.cli()
 
 	print(f"Starting the {BOLD}extraction{END}.\n")
