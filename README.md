@@ -2,42 +2,36 @@
 
 This repository contains a set of Python tools for extracting data from Redmine, processing it, and exporting it to either Jira or spreadsheet format. The tools are designed to work together as part of a migration pipeline.
 
-Tried on version 3.4.6 of Redmine.
+Tested on version 3.4.6 of Redmine.
 
-## Components
+## Main Tool
 
-The toolkit consists of three main scripts:
+The primary tool of this project is the all-in-one migration program that will automatically do all the steps of the migration for you:
 
-1. [`extract_from_redmine.py`](EXTRACT.md) - Extracts data from a Redmine instance via its API
-2. [`process_to_jira.py`](PROCESS_TO_JIRA.md) - Processes the extracted Redmine data and converts it to Jira format
-3. [`process_to_spreadsheet.py`](PROCESS_TO_SPREADSHEET.md) - Processes the extracted Redmine data and exports it to spreadsheet format
+- [`redmine_migration.py`](REDMINE_MIGRATION.md) - Automates the entire migration process from Redmine to Jira and/or spreadsheet format.
 
 ## Quick Start
 
-1. Extract data from Redmine:
+1. Run the all-in-one migration tool:
    ```bash
-   python3 extract_from_redmine.py --url <redmine_url> --api-key <your_api_key>
+   python3 redmine_migration.py
    ```
 
-2. Convert to Jira format:
-   ```bash
-   python3 process_to_jira.py
-   ```
+## Additional Tool
 
-   OR
+If you're having trouble with the all-in-one tool, or just want to do it step by step on your own, you can use these programs:
 
-3. Export to spreadsheets:
-   ```bash
-   python3 process_to_spreadsheet.py
-   ```
+1. [`extract_from_redmine.py`](srcs_extraction/extract_from_redmine.py) - Extracts data from a Redmine instance via its API.
+2. [`process_to_jira.py`](srcs_process_to_jira/process_to_jira.py) - Processes the extracted Redmine data and converts it to Jira format.
+3. [`process_to_spreadsheet.py`](srcs_process_to_spreadsheet/process_to_spreadsheet.py) - Processes the extracted Redmine data and exports it to spreadsheet format.
 
 ## Detailed Documentation
 
 For detailed information about each component, please refer to:
 
-- [EXTRACT.md](EXTRACT.md) - Documentation for the Redmine extraction tool
-- [PROCESS_TO_JIRA.md](PROCESS_TO_JIRA.md) - Documentation for the Jira conversion tool
-- [PROCESS_TO_SPREADSHEET.md](PROCESS_TO_SPREADSHEET.md) - Documentation for the spreadsheet export tool
+- [EXTRACT.md](srcs_extraction/EXTRACT.md) - Documentation for the Redmine extraction tool.
+- [PROCESS_TO_JIRA.md](PROCESS_TO_JIRA.md) - Documentation for the Jira conversion tool.
+- [PROCESS_TO_SPREADSHEET.md](PROCESS_TO_SPREADSHEET.md) - Documentation for the spreadsheet export tool.
 
 ## Installation
 
