@@ -4,6 +4,17 @@ This repository contains a set of Python tools for extracting data from Redmine,
 
 Tested with Redmine 3.4.6 and 6.0.3.
 
+## Table of contents
+
+- [Main Tool](#main-tool)
+- [Additional Tool](#additional-tool)
+- [Detailed Documentation](#detailed-documentation)
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+- [Usage](#usage)
+  - [Main program](#main-program)
+  - [Additional program](#additional-program)
+
 ## Main Tool
 
 The primary tool of this project is the all-in-one migration program that will automatically do all the steps of the migration for you:
