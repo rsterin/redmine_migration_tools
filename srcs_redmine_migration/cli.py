@@ -23,7 +23,7 @@ def cli():
 			endpoints.append(tmp)
 
 	# Process
-	process = input(f"Do you want to process to Jira, Spreadsheet or both ? (jira/spreadsheet/both): ").lower()
+	process = input(f"Do you want to process to Jira, Spreadsheet or both ? (Jira/Spreadsheet/Both): ").lower()
 	auto = input(f"Do you want to enable auto indent (new file when X lines reached, default: {UNDERLINE}yes{END})? (yes/no): ").lower() == 'yes' or True
 	if auto:
 		auto_indent = input(f"How many lines per file (default: {UNDERLINE}10 000{END})?: ") or "10000"

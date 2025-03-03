@@ -116,7 +116,8 @@ class RedmineMigrationConfigApp:
         else:
             self.auto_indent_frame.grid_remove()
 
-    def submit_form(self):
+    def submit_form(self, event=None):
+        print(f"\n\n{event}\n\n")
         redmine_url = self.redmine_url_entry.get()
         api_key = self.api_key_entry.get()
         output_path = self.output_path_entry.get()
