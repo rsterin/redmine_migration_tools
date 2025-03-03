@@ -97,7 +97,7 @@ class RedmineMigrationConfigApp:
         submit_button.grid(row=3, column=0, pady=10)
 
         root.bind('<Escape>', self.close)
-        root.bind('<Enter>', self.submit_form)
+        # root.bind('<Enter>', self.submit_form) # Weird behavior, automatically submits the form even if the key is not pressed
 
     def add_endpoint(self):
         entry = ttk.Entry(self.root.nametowidget(".!labelframe.!labelframe"))
@@ -117,7 +117,6 @@ class RedmineMigrationConfigApp:
             self.auto_indent_frame.grid_remove()
 
     def submit_form(self, event=None):
-        print(f"\n\n{event}\n\n")
         redmine_url = self.redmine_url_entry.get()
         api_key = self.api_key_entry.get()
         output_path = self.output_path_entry.get()
