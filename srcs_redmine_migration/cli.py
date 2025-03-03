@@ -13,7 +13,7 @@ def cli():
 		print(f"{BOLD}API key cannot be empty. Please try again.{END}")
 	output_path = input(f"Enter the {BOLD}output path{END} for the data (default: {UNDERLINE}outputs/{END}): ") or "outputs/"
 	multiple_files = input(f"Do you want to use {BOLD}multiple files functionality{END} (one file per project, default: {UNDERLINE}yes{END})? (yes/no): ").lower() == 'yes' or True
-	endpoint = input(f"Do you want to add specific {BOLD}endpoints{END} (default: {UNDERLINE}no{END}? (yes/no): ").lower() == 'yes' or False
+	endpoint = input(f"Do you want to add specific {BOLD}endpoints{END} (default: {UNDERLINE}no{END})? (yes/no): ").lower() == 'yes' or False
 	endpoints = []
 	if endpoint:
 		while True:
