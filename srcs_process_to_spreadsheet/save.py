@@ -74,6 +74,7 @@ def export_project_details(writer, project):
 	for row_num, content in enumerate(pd.DataFrame(project_details).values, start=2):
 		worksheet_details.set_row(row_num, None, cell_format)
 	worksheet_details.merge_range('A1:H1', 'Project info', merge_format)
+	worksheet_details.freeze_panes(2, 0)
 
 def export_issues(writer, project):
 	"""
@@ -205,6 +206,8 @@ def export_issues(writer, project):
 					col_index += 5
 					index += 1
 
+			worksheet_issues.freeze_panes(2, 0)
+
 def export_memberships(writer, project):
 	"""
 	Saves project memberships to an Excel sheet.
@@ -245,6 +248,7 @@ def export_memberships(writer, project):
 			for row_num, content in enumerate(pd.DataFrame(memberships).values, start=2):
 				worksheet_memberships.set_row(row_num, None, cell_format)
 			worksheet_memberships.merge_range('A1:D1', 'Memberships info', merge_format)
+			worksheet_memberships.freeze_panes(2, 0)
 
 def export_versions(writer, project):
 	"""
@@ -289,6 +293,7 @@ def export_versions(writer, project):
 			for row_num, content in enumerate(pd.DataFrame(versions).values, start=2):
 				worksheet_versions.set_row(row_num, None, cell_format)
 			worksheet_versions.merge_range('A1:G1', 'Version info', merge_format)
+			worksheet_versions.freeze_panes(2, 0)
 
 def export_files(writer, project):
 	"""
@@ -337,6 +342,7 @@ def export_files(writer, project):
 				worksheet_files.set_row(row_num, None, cell_format)
 			worksheet_files.merge_range('A1:H1', 'File info', merge_format)
 			worksheet_files.merge_range('I1:J1', 'Author info', merge_format)
+			worksheet_files.freeze_panes(2, 0)
 
 def export_time_entries(writer, project):
 	"""
@@ -390,6 +396,7 @@ def export_time_entries(writer, project):
 		worksheet_time_entries.merge_range('A1:D1', 'Project info', merge_format)
 		worksheet_time_entries.merge_range('E1:F1', 'User info', merge_format)
 		worksheet_time_entries.merge_range('G1:M1', 'Time Entry info', merge_format)
+		worksheet_time_entries.freeze_panes(2, 0)
 
 def apply_excel_formatting(project_output_path):
 	"""
