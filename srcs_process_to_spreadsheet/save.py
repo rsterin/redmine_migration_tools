@@ -142,7 +142,7 @@ def export_issues(writer, project):
 				parent_id = issue.get("Parent ID")
 				if parent_id and parent_id in row_mapping:
 					parent_row = row_mapping[parent_id]
-					link = f'internal:Issues!A{parent_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows
+					link = f'internal:Issues!A{parent_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows (write_formula)
 					worksheet_issues.write_url(row_num, parent_col_idx, link, string=str(parent_id))
 
 			cell_format = writer.book.add_format({
@@ -181,13 +181,13 @@ def export_issues(writer, project):
 
 						worksheet_issues.write(relation_index.get("index"), col_index, relation_index.get("ID"), cell_format)
 						if issue_id_row:
-							link = f'internal:Issues!A{issue_id_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows
+							link = f'internal:Issues!A{issue_id_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows (write_formula)
 							worksheet_issues.write_url(relation_index.get("index"), col_index + 1, link, string=str(relation_index.get("Issue ID")))
 						else:
 							worksheet_issues.write(relation_index.get("index"), col_index + 1, relation_index.get("Issue ID"), cell_format)
 
 						if issue_to_id_row:
-							link = f'internal:Issues!A{issue_to_id_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows
+							link = f'internal:Issues!A{issue_to_id_row}' # TODO: Fix link that redirect to the original cell despite changing the order of the rows (write_formula)
 							worksheet_issues.write_url(relation_index.get("index"), col_index + 2, link, string=str(relation_index.get("Issue To ID")))
 						else:
 							worksheet_issues.write(relation_index.get("index"), col_index + 2, relation_index.get("Issue To ID"), cell_format)
