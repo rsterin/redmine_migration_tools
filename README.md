@@ -55,11 +55,11 @@ To run the main program:
  ```
  python3 redmine_migration.py
  ```
-It will try to use tkinter if install, and if not, you will be able to use CLI input.
+It will try to use tkinter if installed, and if not, you will be able to use CLI input.
 
 ### Additional program
 
-And if you want to run each program separatelly:
+And if you want to run each program separately:
 
 1. Extract the data:
    ```bash
